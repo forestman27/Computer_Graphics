@@ -1,7 +1,7 @@
-import {VertexArray} from '../../src/VertexArray.js';
-import {VertexAttributes} from '../../src/VertexAttribute.js';
-import {ShaderProgram} from '../../src/ShaderProgram.js';
-import {Matrix4} from '../../src/Matrix5.js';
+import VertexArray from '../../src/VertexArray.js';
+import VertexAttributes from '../../src/VertexAttribute.js';
+import ShaderProgram from '../../src/ShaderProgram.js';
+import Matrix4 from '../../src/Matrix5.js';
 
 const canvas = document.getElementById('canvas');
 const mytextarea = document.getElementById('mytextarea');
