@@ -1,5 +1,5 @@
 {
-  "name": "YOUR-APPLICATION-NAME",
+  "name": "Boxels",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --config=.webpack/webpack.development.js --mode development",

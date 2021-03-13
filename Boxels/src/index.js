@@ -21,6 +21,8 @@ function render() {
   // since we have indexed triangles in buffer
   vertexArray.drawIndexed(gl.TRIANGLES);
   shaderProgram.unbind();
+  vertexArray.unbind();
+
 }
 
 function onSizeChanged() {
@@ -54,7 +56,7 @@ function createArt() {
     `;
     */
     
-    test = `` + mytextarea.value;
+    test = mytextarea.value;
     console.log(test)
   }
   var x = canvas.clientWidth;
@@ -63,9 +65,9 @@ function createArt() {
   const fragSource = `
     precision highp float;
     in vec3 fragColor; // names must match
-    vec2 dimensions = vec2(` + x + `,` + y +`);
+    vec2 dimensions = vec2(${x},${y});
     out vec4 fragmentColor;
-    vec3 f() { ` + test + ` }
+    vec3 f() { ${test} }
     void main() {
       fragmentColor = vec4(f(), 1.0);
       //fragmentColor = vec4(fragColor, 1.0);
@@ -110,4 +112,13 @@ async function initialize() {
 
   createArt();
 }
+
+// Read the file and print its contents.
+var fs = require('fs')
+var filename = 'object1.txt'
+// fs.readFile(filename, 'utf8', function(err, data) {
+//   if (err) throw err;
+//   console.log('OK: ' + filename);
+//   console.log(data)
+// });
 initialize();
