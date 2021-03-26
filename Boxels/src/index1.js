@@ -5,6 +5,7 @@ import {Matrix4} from '../../src/Matrix5.js';
 
 const canvas = document.getElementById('canvas');
 window.gl = canvas.getContext('webgl2');
+console.log("whwhwh")
 
 let shaderProgram;
 let vertexArray;
@@ -50,75 +51,10 @@ function onSizeChanged() {
 
   render();
 }
+console.log('hi')
 
 async function initialize(data) {
-  const ConstNormals = [
-    0, 0, 1,
-    0, 0, 1,
-    0, 0, 1,
-    0, 0, 1,
-    0, 0, -1,
-    0, 0, -1,
-    0, 0, -1,
-    0, 0, -1,
-    1, 0, 0,
-    1, 0, 0,
-    1, 0, 0,
-    1, 0, 0,
-    -1, 0, 0,
-    -1, 0, 0,
-    -1, 0, 0,
-    -1, 0, 0,
-    0, 1, 0,
-    0, 1, 0,
-    0, 1, 0,
-    0, 1, 0,
-    0, -1, 0,
-    0, -1, 0,
-    0, -1, 0,
-    0, -1, 0,
-  ];  
-  const ConstFaces = [
-    0, 1, 2,
-    1, 3, 2,
-    4, 5, 6,
-    5, 7, 6,
-    8, 9, 10,
-    9, 11, 10,
-    12, 13, 14,
-    13, 15, 14,
-    16, 17, 18,
-    17, 19, 18,
-    20, 21, 22,
-    21, 23, 22,
-  ];
-
-  const ConstPositions = [
-    -1, -1,  1,
-     1, -1,  1,
-    -1,  1,  1,
-     1,  1,  1,
-    -1, -1, -1,
-     1, -1, -1,
-    -1,  1, -1,
-     1,  1, -1,
-     1, -1,  1,
-     1, -1, -1,
-     1,  1,  1,
-     1,  1, -1,
-    -1,  1,  1,
-    -1,  1, -1,
-    -1, -1,  1,
-    -1, -1, -1,
-    -1, 1, -1,
-     1, 1, -1,
-    -1, 1,  1,
-     1, 1,  1,
-    -1, -1, -1, 
-     1, -1, -1,
-    -1, -1,  1,
-     1, -1,  1,
-  ];
+  console.log('hi')
 
   transform = Matrix4.identity();
   data = data.split('\n')
@@ -135,38 +71,104 @@ async function initialize(data) {
     line[i].color = parseInt(data[i][6])
   }
   console.log(line)
-  // initialize each block position
-  var positions = [];
-  for (var x = 0; x < data.length; x++) {
-    for (var i = x * ConstPositions.length; i < x * ConstPositions.length + ConstPositions.length; i++) {
-      // x
-      if (i % 3 == 0) {
-        positions[i] = ConstPositions[i%ConstPositions.length] + line[x].x;
-      // y
-      } else if (i % 3 == 1) {
-        positions[i] = ConstPositions[i%ConstPositions.length] + line[x].y;   
-      } 
-      // z
-      else {
-        positions[i] = ConstPositions[i%ConstPositions.length] + line[x].z;
-      }
-    }
-  }
-  var faces = [];
-  let normals = ConstNormals;
 
-  for (var x = 0; x < data.length; x++) {
-    normals = [...normals, ...ConstNormals]
-    for (var i = 0; i < ConstFaces.length; i++) {
+  // 
+  const positions = [
+    // Front Face
+    -1, -1,  1,
+     1, -1,  1,
+    -1,  1,  1,
+     1,  1,  1,
 
-      faces[i + x * ConstFaces.length] = ConstFaces[i] + 24 * x;
-    }
+    // Back Face
+    -1, -1, -1,
+     1, -1, -1,
+    -1,  1, -1,
+     1,  1, -1,
+
+    // Right Face
+     1, -1,  1,
+     1, -1, -1,
+     1,  1,  1,
+     1,  1, -1,
+
+    // Left Face
+    -1,  1,  1,
+    -1,  1, -1,
+    -1, -1,  1,
+    -1, -1, -1,
     
-  }
+    // Top Face
+    -1, 1, -1,
+     1, 1, -1,
+    -1, 1,  1,
+     1, 1,  1,
+
+    // Bottom Face
+    -1, -1, -1, 
+     1, -1, -1,
+    -1, -1,  1,
+     1, -1,  1,
+  ];
   const colors = [];
+  const faces = [
+    0, 1, 2,
+    1, 3, 2,
+
+    4, 5, 6,
+    5, 7, 6,
+ 
+    8, 9, 10,
+    9, 11, 10,
+
+    12, 13, 14,
+    13, 15, 14,
+
+    16, 17, 18,
+    17, 19, 18,
+
+    20, 21, 22,
+    21, 23, 22,
+    
+  ];
+  const normals = [
+    // Front Face
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+        
+    // Back Face
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+
+    // Right Face
+    1, 0, 0,
+    1, 0, 0,
+    1, 0, 0,
+    1, 0, 0,
+
+    // Left Face
+    -1, 0, 0,
+    -1, 0, 0,
+    -1, 0, 0,
+    -1, 0, 0,
+    
+    // Top Face
+    0, 1, 0,
+    0, 1, 0,
+    0, 1, 0,
+    0, 1, 0,
+    
+    // Bottom Face
+    0, -1, 0,
+    0, -1, 0,
+    0, -1, 0,
+    0, -1, 0,
+  ];  
   
-  console.log(normals.length);
-  console.log(faces.length);
 
   const attributes = new VertexAttributes();
   attributes.addAttribute('normal', normals / 3, 3, normals);
