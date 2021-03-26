@@ -18,6 +18,19 @@ let prevClientX;
 let prevClientY;
 let timeRotation = 0;
 
+loadTxt();
+function loadTxt() {
+  fetch('input.txt')
+  .then(function(response) {
+    return response.text();
+  })
+  .then(function(data) {
+    console.log(data);
+  })
+  .catch(function(error) {
+    console.log(error)
+  })
+}
 function render() {
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(0, 0, 0, 1);
