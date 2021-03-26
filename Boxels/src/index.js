@@ -52,6 +52,7 @@ function onSizeChanged() {
 }
 
 async function initialize(data) {
+
   const ConstNormals = [
     0, 0, 1,
     0, 0, 1,
@@ -126,13 +127,13 @@ async function initialize(data) {
   for (var i = 0; i < data.length; i++) {
     data[i] = data[i].split(' ');
     line[i] = {};
-    line[i].x = parseInt(data[i][0])
-    line[i].y = parseInt(data[i][1])
-    line[i].z = parseInt(data[i][2])
-    line[i].width = parseInt(data[i][3])
-    line[i].height = parseInt(data[i][4])
-    line[i].depth = parseInt(data[i][5])
-    line[i].color = parseInt(data[i][6])
+    line[i].x = parseFloat(data[i][0])
+    line[i].y = parseFloat(data[i][1])
+    line[i].z = parseFloat(data[i][2])
+    line[i].width = parseFloat(data[i][3])
+    line[i].height = parseFloat(data[i][4])
+    line[i].depth = parseFloat(data[i][5])
+    line[i].color = parseFloat(data[i][6])
   }
   console.log(line)
   // initialize each block position
@@ -141,14 +142,15 @@ async function initialize(data) {
     for (var i = x * ConstPositions.length; i < x * ConstPositions.length + ConstPositions.length; i++) {
       // x
       if (i % 3 == 0) {
-        positions[i] = ConstPositions[i%ConstPositions.length] + line[x].x;
+        positions[i] = (ConstPositions[i%ConstPositions.length] + line[x].x) * line[x].width;
+        console.log(line[x].width)
       // y
       } else if (i % 3 == 1) {
-        positions[i] = ConstPositions[i%ConstPositions.length] + line[x].y;   
+        positions[i] = (ConstPositions[i%ConstPositions.length] + line[x].y) * line[x].height;   
       } 
       // z
       else {
-        positions[i] = ConstPositions[i%ConstPositions.length] + line[x].z;
+        positions[i] = (ConstPositions[i%ConstPositions.length] + line[x].z) * line[x].depth;
       }
     }
   }
@@ -158,7 +160,6 @@ async function initialize(data) {
   for (var x = 0; x < data.length; x++) {
     normals = [...normals, ...ConstNormals]
     for (var i = 0; i < ConstFaces.length; i++) {
-
       faces[i + x * ConstFaces.length] = ConstFaces[i] + 24 * x;
     }
     
