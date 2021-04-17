@@ -8,16 +8,6 @@ import { Trackball } from '../../src/Trackball.js';
 import { Generate } from '../../src/Generate.js';
 import { Noise } from '../../src/Noise.js';
 
-// import { VertexArray } from './VertexArray';
-// import { VertexAttributes } from './VertexAttributes';
-// import { ShaderProgram } from './ShaderProgram';
-// import { Matrix4 } from './Matrix4';
-// import { Vector3 } from './Vectors';
-// import { Camera } from './Camera';
-// import { Trackball } from './Trackball';
-// import { Generate } from './Generate';
-// import { Noise } from './Noise';
-
 const canvas = document.getElementById('canvas');
 window.gl = canvas.getContext('webgl2');
 
