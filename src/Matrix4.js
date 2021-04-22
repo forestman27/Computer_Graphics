@@ -1,160 +1,180 @@
 export class Matrix4 {
-    constructor() {
-        /*
-        Ordering of the elements array.
-        [0, 4, 8, 12]
-        [1, 5, 9, 13]
-        [2, 6, 10, 14]
-        [3, 7, 11, 15]
-        */
+    constructor()
+    {
         this.elements = new Float32Array(16);
+        //0 4 8 12
+        //1 5 9 13
+        //2 6 10 14
+        //3 7 11 15
     }
 
-    static create(vector16) {
-        let matrix = new Matrix4();
-
-        for (let i = 0; i < 16; i++) {
-            matrix.elements[i] = vector16[i];
-        }
-
-        return matrix;
+    static identity()
+    {
+        let m = new Matrix4();
+        m.elements.fill(0);
+        m.elements[0] = 1;
+        m.elements[5] = 1;
+        m.elements[10] = 1;
+        m.elements[15] = 1;
+        return m;
     }
 
-    static identity() {
-        let matrix = new Matrix4();
-
-        matrix.elements[0] = 1;
-        matrix.elements[5] = 1;
-        matrix.elements[10] = 1;
-        matrix.elements[15] = 1;
-
-        return matrix;
+    static scale(fx, fy, fz)
+    {
+        let m = new Matrix4();
+        m.elements.fill(0);
+        m.elements[0] = fx;
+        m.elements[5] = fy;
+        m.elements[10] = fz;
+        m.elements[15] = 1;
+        return m;
     }
 
-    static scale(x, y, z) {
-        let matrix = new Matrix4();
-
-        matrix.elements[0] = x;
-        matrix.elements[5] = y;
-        matrix.elements[10] = z;
-        matrix.elements[15] = 1;
-        return matrix;
+    static translate(ox, oy, oz)
+    {
+        let m = new Matrix4();
+        m.elements.fill(0);
+        m.elements[0] = 1;
+        m.elements[5] = 1;
+        m.elements[10] = 1;
+        m.elements[15] = 1;
+        m.elements[12] = ox;
+        m.elements[13] = oy;
+        m.elements[14] = oz;
+        return m; 
     }
 
-    static translate(x, y, z) {
-        let matrix = this.identity();
 
-        matrix.elements[12] = x;
-        matrix.elements[13] = y;
-        matrix.elements[14] = z;
-
-        return matrix;
+    static rotateZ(degrees)
+    {
+        let radians = degrees * (Math.PI/180);
+        let m = new Matrix4();
+        m.elements.fill(0);
+        m.elements[0] = Math.cos(radians);
+        m.elements[1] = Math.sin(radians);
+        m.elements[4] = -1 * Math.sin(radians);
+        m.elements[5] = Math.cos(radians);
+        m.elements[10] = 1;
+        m.elements[15] = 1;
+        return m; 
     }
 
-    static rotateX(degrees) {
-        let matrix = this.identity();
+    static rotateX(degrees)
+    {
+        let radians = degrees * (Math.PI/180);
+        let m = new Matrix4();
+        m.elements.fill(0);
+        m.elements[5] = Math.cos(radians);
+        m.elements[6] = Math.sin(radians);
+        m.elements[9] = -1 * Math.sin(radians);
+        m.elements[10] = Math.cos(radians);
+        m.elements[0] = 1;
+        m.elements[15] = 1;
+        return m; 
+    }
+    
 
-        let radians = degrees * (Math.PI / 180);
-        matrix.elements[5] = Math.cos(radians);
-        matrix.elements[6] = Math.sin(radians);
-        matrix.elements[9] = -Math.sin(radians);
-        matrix.elements[10] = Math.cos(radians);
-
-        return matrix;
+    static rotateY(degrees)
+    {
+        let radians = degrees * (Math.PI/180);
+        let m = new Matrix4();
+        m.elements.fill(0);
+        m.elements[0] = Math.cos(radians);
+        m.elements[2] = Math.sin(radians);
+        m.elements[8] = -1 * Math.sin(radians);
+        m.elements[10] = Math.cos(radians);
+        m.elements[5] = 1;
+        m.elements[15] = 1;
+        return m; 
     }
 
-    static rotateY(degrees) {
-        let matrix = this.identity();
-
-        let radians = degrees * (Math.PI / 180);
-        matrix.elements[0] = Math.cos(radians);
-        matrix.elements[2] = Math.sin(radians);
-        matrix.elements[8] = -Math.sin(radians);
-        matrix.elements[10] = Math.cos(radians);
-
-        return matrix;
+    static ortho(left, right, bottom, top, near, far)
+    {
+        let m = new Matrix4();
+        m.elements.fill(0);
+        m.elements[0] = 2 / (right-left);
+        m.elements[5] = 2 / (top-bottom);
+        m.elements[10] = 2 / (near-far);
+        m.elements[15] = 1;
+        m.elements[12] = -1 * ((right + left) / (right - left));
+        m.elements[13] = -1 * ((top + bottom) / (top - bottom));
+        m.elements[14] = ((near + far) / (near - far));
+        return m;
     }
 
-    static rotateZ(degrees) {
-        let matrix = this.identity();
-
-        let radians = degrees * (Math.PI / 180);
-        matrix.elements[0] = Math.cos(radians);
-        matrix.elements[1] = Math.sin(radians);
-        matrix.elements[4] = -Math.sin(radians);
-        matrix.elements[5] = Math.cos(radians);
-
-        return matrix;
-    }
-
-    static rotateAroundAxis(axis, degrees) {
-        let matrix = new Matrix4();
-
-        let radians = degrees * (Math.PI / 180);
-
-        let s = Math.sin(radians);
-        let c = Math.cos(radians);
-        let v = axis.normalize();
-
-        matrix.elements[0] = (1 - c) * v.x * v.x + c;
-        matrix.elements[1] = (1 - c) * v.y * v.x + s * v.z;
-        matrix.elements[2] = (1 - c) * v.z * v.x - s * v.y;
-
-        matrix.elements[4] = (1 - c) * v.x * v.y - s * v.z;
-        matrix.elements[5] = (1 - c) * v.y * v.y + c;
-        matrix.elements[6] = (1 - c) * v.z * v.y + s * v.x;
-
-        matrix.elements[8] = (1 - c) * v.x * v.z + s * v.y;
-        matrix.elements[9] = (1 - c) * v.y * v.z - s * v.x;
-        matrix.elements[10] = (1 - c) * v.z * v.z + c;
-
-        matrix.elements[15] = 1;
-
-        return matrix;
-    }
-
-    static ortho(left, right, bottom, top, near, far) {
-        let matrix = new Matrix4();
-
-        matrix.elements[0] = 2 / (right - left);
-        matrix.elements[5] = 2 / (top - bottom);
-        matrix.elements[10] = 2 / (near - far);
-        matrix.elements[12] = -(right + left) / (right - left);
-        matrix.elements[13] = -(top + bottom) / (top - bottom);
-        matrix.elements[14] = (near + far) / (near - far);
-        matrix.elements[15] = 1;
-
-        return matrix;
-    }
-
-    multiplyVector4(vector4) {
-        let output = new Float32Array(4);
-        for (let i = 0; i < 4; i++) {
-            let sum = 0;
-            for (let j = 0; j < 4; j++) {
-                sum += this.elements[i * 4 + j] * vector4[j];
-            }
-            output[i] = sum;
-        }
-
-        return output;
-    }
-
-    multiplyMatrix4(that) {
-        let matrix = new Matrix4();
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                matrix.elements[i * 4 + j] = this.elements[j] * that.elements[i * 4] +
-                    this.elements[4 + j] * that.elements[1 + i * 4] +
-                    this.elements[8 + j] * that.elements[2 + i * 4] +
-                    this.elements[12 + j] * that.elements[3 + i * 4];
+    multiplyVector4(vector) 
+    {
+        //0 4 8 12
+        //1 5 9 13
+        //2 6 10 14
+        //3 7 11 15
+        let result = [];
+        let currDotProduct = 0;
+        let vecIndexCounter = 0;
+        for(let r = 0; r < 4; r++)
+        {
+            for(let c = 0; c < 4; c++)
+            {
+                let matrixVal = this.elements[r + (4*c)];
+                currDotProduct += matrixVal * vector[vecIndexCounter];
+                vecIndexCounter++;
+                if(vecIndexCounter == 4)
+                {
+                    vecIndexCounter = 0;
+                    result.push(currDotProduct);
+                    currDotProduct = 0;
+                } 
             }
         }
-        return matrix;
+        
+        return result;
     }
 
+    multiplyMatrix4(otherMatrix)
+    {
+        let result = new Matrix4();
+        for(let r = 0; r < 4; r++)
+        {
+            for(let c = 0; c < 4; c++)
+            {
+                for(let i = 0; i < 4; i++)
+                {
+                    result.elements[r + (4*c)] += this.elements[r + (4*i)] * otherMatrix.elements[i + (4*c)];
+                }
+            }
+        }
+        return result;
+    }
 
-    toBuffer() {
+    static rotateAroundAxis(axis, degrees)
+    {
+        //0 4 8 12
+        //1 5 9 13
+        //2 6 10 14
+        //3 7 11 15
+        let result = new Matrix4();
+        let radians = degrees * (Math.PI/180);
+        const s = Math.sin(radians);
+        const c = Math.cos(radians);
+
+        result.elements.fill(0);
+
+        result.elements[0] = (1 - c) * axis.x * axis.x + c;
+        result.elements[1] = (1 - c) * axis.y * axis.x + s * axis.z;
+        result.elements[2] = (1 - c) * axis.z * axis.x - s * axis.y;
+        result.elements[4] = (1 - c) * axis.x * axis.y - s * axis.z;
+        result.elements[5] = (1 - c) * axis.y * axis.y + c;
+        result.elements[6] = (1 - c) * axis.z * axis.y + s * axis.x;
+        result.elements[8] = (1 - c) * axis.x * axis.z + s * axis.y;
+        result.elements[9] = (1 - c) * axis.y * axis.z - s * axis.x;
+        result.elements[10] = (1 - c) * axis.z * axis.z + c;
+        result.elements[15] = 1;
+
+        return result;
+    }
+
+    toBuffer() 
+    {
         return this.elements;
     }
 }

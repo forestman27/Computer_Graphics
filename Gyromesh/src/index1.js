@@ -82,7 +82,6 @@ async function initialize() {
 
   var attributes = new VertexAttributes();
   let inputFile = await fetch("teapot.obj").then(response => response.text());
-  //console.log(generateOBJ(inputFile))
 
   //var {positions, normals, indices, dimenxyz} = Generate.obj(inputFile);  
   var {positions, normals, indices, dimenxyz} = Generate.obj(inputFile)

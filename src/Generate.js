@@ -45,77 +45,147 @@ static plane(width, height, nlatitude, nlongitude) {
     return attributes;
 }
 
-static generateTorus(oradius, iradius, nlatitudes, nlongitudes) {
-    let seeds = [];
-    let seedNormals = [];
+// static torus(oradius, iradius, nlatitudes, nlongitudes) {
+//     let seeds = [];
+//     let seedNormals = [];
 
-    for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
-        let radians = ilatitude / (nlatitudes) * 2 * Math.PI;
-        seeds.push([Math.cos(radians), Math.sin(radians), 0, 0]);
-        seedNormals.push([Math.cos(radians), Math.sin(radians), 0, 0]);
-    }
+//     for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
+//         let radians = ilatitude / (nlatitudes) * 2 * Math.PI;
+//         seeds.push([Math.cos(radians), Math.sin(radians), 0, 0]);
+//         seedNormals.push([Math.cos(radians), Math.sin(radians), 0, 0]);
+//     }
 
-    // Shift seed positions.
-    let seedOffset = (oradius + iradius) / 2;
-    let seedScale = (oradius - iradius) / 2;
-    for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
-        for (let x = 0; x < 4; x++) {
-            seeds[ilatitude][x] *= seedScale;
-        }
-        seeds[ilatitude][0] += seedOffset;
-    }
+//     // Shift seed positions.
+//     let seedOffset = (oradius + iradius) / 2;
+//     let seedScale = (oradius - iradius) / 2;
+//     for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
+//         for (let x = 0; x < 4; x++) {
+//             seeds[ilatitude][x] *= seedScale;
+//         }
+//         seeds[ilatitude][0] += seedOffset;
+//     }
 
-    let positions = [];
-    let normals = [];
-    let colors = [];
+//     let positions = [];
+//     let normals = [];
+//     let colors = [];
 
-    for (let ilongitude = 0; ilongitude < nlongitudes; ilongitude++) {
-        let degrees = ilongitude / nlongitudes * 360;
-        let rotation = Matrix4.rotateY(degrees);
+//     for (let ilongitude = 0; ilongitude < nlongitudes; ilongitude++) {
+//         let degrees = ilongitude / nlongitudes * 360;
+//         let rotation = Matrix4.rotateY(degrees);
 
-        for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
-            let position = rotation.multiplyVector4(seeds[ilatitude]);
-            let normal = rotation.multiplyVector4(seedNormals[ilatitude]);
-            positions.push(position[0], position[1], position[2])
-            normals.push(normal[0], normal[1], normal[2]);
-            colors.push(241/255, 209/255, 162/255);
-            //colors.push(Math.random(), Math.random(), Math.random());
-            //colors.push(241/255, 209/255, 162/255);
-            //colors.push(Math.random(), Math.random(), Math.random());
-        }
-    }
+//         for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
+//             let position = rotation.multiplyVector4(seeds[ilatitude]);
+//             let normal = rotation.multiplyVector4(seedNormals[ilatitude]);
+//             positions.push(position[0], position[1], position[2])
+//             normals.push(normal[0], normal[1], normal[2]);
+//             colors.push(241/255, 209/255, 162/255);
+//             //colors.push(Math.random(), Math.random(), Math.random());
+//             //colors.push(241/255, 209/255, 162/255);
+//             //colors.push(Math.random(), Math.random(), Math.random());
+//         }
+//     }
 
-    let indices = [];
+//     let indices = [];
 
-    for (let ilongitude = 0; ilongitude < nlongitudes; ilongitude++) {
-        let iNextLongitude = (ilongitude + 1) % nlongitudes;
+//     for (let ilongitude = 0; ilongitude < nlongitudes; ilongitude++) {
+//         let iNextLongitude = (ilongitude + 1) % nlongitudes;
 
-        for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
-            let iNextLatitude = (ilatitude + 1) % nlatitudes;
+//         for (let ilatitude = 0; ilatitude < nlatitudes; ilatitude++) {
+//             let iNextLatitude = (ilatitude + 1) % nlatitudes;
 
-            indices.push(
-                ilongitude * nlatitudes + ilatitude,
-                ilongitude * nlatitudes + iNextLatitude,
-                iNextLongitude * nlatitudes + ilatitude,
-            );
+//             indices.push(
+//                 ilongitude * nlatitudes + ilatitude,
+//                 ilongitude * nlatitudes + iNextLatitude,
+//                 iNextLongitude * nlatitudes + ilatitude,
+//             );
 
-            indices.push(
-                ilongitude * nlatitudes + iNextLatitude,
-                iNextLongitude * nlatitudes + iNextLatitude,
-                iNextLongitude * nlatitudes + ilatitude,
-            );
-        }
-    }
+//             indices.push(
+//                 ilongitude * nlatitudes + iNextLatitude,
+//                 iNextLongitude * nlatitudes + iNextLatitude,
+//                 iNextLongitude * nlatitudes + ilatitude,
+//             );
+//         }
+//     }
 
 
     
-    const attributes = new VertexAttributes();
-    attributes.addAttribute('position', positions.length / 3, 3, positions);
-    attributes.addAttribute('color', colors.length / 3, 3, colors);
-    attributes.addAttribute('normal', normals.length / 3, 3, normals);
-    attributes.addIndices(indices);
-    return attributes;
-}
+//     const attributes = new VertexAttributes();
+//     attributes.addAttribute('position', positions.length / 3, 3, positions);
+//     attributes.addAttribute('color', colors.length / 3, 3, colors);
+//     attributes.addAttribute('normal', normals.length / 3, 3, normals);
+//     attributes.addIndices(indices);
+//     return attributes;
+// }
+// This is where I got the parsing algorithm. Or at least some of it. 
+// https://github.com/timoxley/threejs/blob/master/utils/exporters/obj/convert_obj_three.py
+static obj(inputFile) {
+
+    var positions = [];
+    var normals = [];
+
+    let vPositions = [];
+    let vNormals = [];
+    let faces = [];
+    let maxxyz = [];
+    console.log("objj")
+
+    var lines = inputFile.split("\n");
+
+    lines.map((line1) => {
+        // f 1 2 3 each line
+        var line = line1.split(" ");
+        var rowType = line[0];
+        // f
+        var values = line.slice(1).map(Number); // returns all but the first element as numbers
+        // var values = []
+        // line = line.slice(1);
+        // switch(rowType) {
+        //     case ("v"): for (var i = 0; i < line.length; i++) {
+        //         values[i] = parseFloat(line[i])
+        //     } break;
+        //     case ("vn"): for (var i = 0; i < line.length; i++) {
+        //         values[i] = parseFloat(line[i])
+        //     } break;
+        //     case ("f"): for (var i = 0; i < line.length; i++) {
+        //         values[i] = parseInt(line[i])
+        //     } break;
+        //     default: break;
+        // }
+        //console.log(values)
+        // [1, 2, 3] 
+    
+        switch(rowType) {
+            case ("v"): vPositions.push(...values); vNormals.push(...[undefined, undefined, undefined]); break;
+            case ("vn"): vNormals.push(...values); break;
+            case ("f"):// faces.push(...values); 
+                var len = values.length;
+
+                // if (len == 4) {
+                //     faces.push(...[faces.length, faces.length + 1, faces.length+2, faces.length + 3]); 
+                // } else {
+                //     faces.push(...[faces.length, faces.length + 1, faces.length+2]); 
+                // }
+    
+                // could be three or four unfortunately.
+                // a, b, c, (d)
+                values.map((vertex, index) => {
+                    faces.push(...[faces.length]); 
+                    positions.push(...vPositions.slice(vertex * 3 - 3, vertex * 3));
+                    var tmp = vPositions.slice(vertex * 3 - 3, vertex * 3);
+                    var v = new Vector3(tmp[0], tmp[1], tmp[2])
+                    v=v.normalize();
+                    normals.push(...[v.x, v.y, v.z])
+                    //normals.push(...vNormals.slice(vertex * 3 - 3, vertex * 3));        
+                });
+                break;
+            default: break;
+        }
+    })
+
+    var indices = faces;
+    var dimenxyz = new Vector3(1,1,1);
+    return {positions, normals, indices, dimenxyz};
+  }
 
 // written by the professor
 static torus(innerRadius, outerRadius, nlatitudes, nlongitudes) {

@@ -9,6 +9,7 @@ export class Trackball {
         this.previousRotation = Matrix4.identity();
         this.rotation = Matrix4.identity();
         this.dimensions = new Vector2(0,0);
+        this.gap = 0.0
     }
 
     setViewport(width, height)
@@ -35,6 +36,7 @@ export class Trackball {
     start(mousePixels)
     {
         this.mouseSphere0 = this.pixelsToSphere(mousePixels);
+        this.gap = 0.0;
     }
 
     drag(mousePixels, multiplier)

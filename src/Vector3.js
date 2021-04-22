@@ -1,5 +1,4 @@
 import {Vector4} from './Vector4';
-
 export class Vector3 {
 
     constructor(x, y, z)
@@ -67,10 +66,6 @@ export class Vector3 {
     toVector4(wCoordinate) 
     {
         return new Vector4(this.x, this.y, this.z, wCoordinate);
-    }
-    scalarMultiply(value)
-    {
-        return new Vector3(this.x * value, this.y * value, this.z * value);
     }
     
 }

@@ -1,4 +1,3 @@
-
 export class Vector2 {
 
     constructor(x, y)
