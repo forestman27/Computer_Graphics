@@ -23,6 +23,7 @@ let isLeftMouseDown = false;
 let trackball;
 // this will be the for tracking the mouse speed when the user flicks the mouse and lets go.
 var speed = new Vector2(0,0);
+
 function render() {
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(1, 1, 1, 1);
@@ -101,16 +102,16 @@ async function initialize() {
   out vec3 positionEye;
 
   void main() {
-    gl_Position = worldToClip * modelToWorld * vec4(position, 1.0);
+    gl_Position = worldToClip * modelToWorld * vec4(position, 2.0);
     fnormal = (modelToWorld * vec4(normal, 0)).xyz;
     positionEye = gl_Position.xyz; //(eyeFromWorld * worldFromModel * vec4(position, 1.0)).xyz;
   } 
   `;
   //   // LIGHT SOURCE
     const fragmentSource = `
-    const float ambientWeight = 0.2;
+    const float ambientWeight = 0.3;
     const float shininess = 90.0;
-    const vec3 lightPosition = vec3(11.0, 1.5, 5.0);
+    const vec3 lightPosition = vec3(1.0, 1.0, 5.0);
     const vec3 lightColor = vec3(0.0, 0.6, 0.9);
     
     in vec3 fnormal;
@@ -167,42 +168,43 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
+  speed = new Vector2(event.clientX, canvas.height - event.clientY);
   if (isLeftMouseDown) {
     const mousePixels1 = new Vector2(event.clientX, canvas.height - event.clientY);
-    speed = new Vector2(event.clientX, canvas.height - event.clientY);
     trackball.drag(mousePixels1, 2);
     render();
   }
 }
 
 function onMouseUp(event) {
+  // this should be set when the 
   if (isLeftMouseDown) {
     isLeftMouseDown = false;
-
     var mousePixels = new Vector2(event.clientX, canvas.height - event.clientY);
-   
-    console.log("XX")
-    console.log(speed.x - mousePixels.x)
 
-    // this gives us the last direction the mouse was moving. this many x by this many y
-    var direction = new Vector2(speed.x - mousePixels.x, speed.y - mousePixels.y)
-    // lets get the speed the mouse was moving?
-    var pace = Math.abs(speed.x - mousePixels.x) + Math.abs(speed.y, mousePixels.y)
-    // speed = new Vector2(event.clientX, canvas.height - event.clientY);
-    // if ()
 
-    for (var i = 0; i < 100; i++) {
-      console.log(direction.x)
-      function myFunc(i) {
-        mousePixels = new Vector2(event.clientX + i, canvas.height - event.clientY + i);
-        trackball.drag(mousePixels, 2);
+    function getDirection() {
+      console.log("direcitons")
+      //speed = new Vector2(event.clientX, canvas.height - event.clientY);
+      var placeholder = new Vector2(event.clientX, canvas.height - event.clientY);
+      var direction = new Vector2(speed.x - placeholder.x, speed.y - placeholder.y)
+      var pace = Math.abs(speed.x - placeholder.x) + Math.abs(speed.y - placeholder.y)
+
+      function myFunc() {
+        trackball.rotation = trackball.rotation.multiplyMatrix4(Matrix4.rotateAroundAxis(new Vector3(-direction.x, direction.y, 1.01), 3));
         render();
+        if (!isLeftMouseDown) {
+          setTimeout(myFunc, 10);
+        }
       }
-      setTimeout(myFunc, i * 100, i);
+      if (pace > 1) {
+        setTimeout(myFunc, 100);
+      }
     }
-  // trackball.end(mousePixels);
+    if (!isLeftMouseDown) {
+      setTimeout(getDirection, 10);
+    }
   }
-  // if the mouse moved more than x in the last 0.05 seconds keep it rotating.
 }
 initialize();
 

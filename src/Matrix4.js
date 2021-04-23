@@ -146,31 +146,30 @@ export class Matrix4 {
         return result;
     }
 
-    static rotateAroundAxis(axis, degrees)
-    {
-        //0 4 8 12
-        //1 5 9 13
-        //2 6 10 14
-        //3 7 11 15
-        let result = new Matrix4();
-        let radians = degrees * (Math.PI/180);
-        const s = Math.sin(radians);
-        const c = Math.cos(radians);
+    static rotateAroundAxis(axis, degrees) {
+        let matrix = new Matrix4();
 
-        result.elements.fill(0);
+        let radians = degrees * (Math.PI / 180);
 
-        result.elements[0] = (1 - c) * axis.x * axis.x + c;
-        result.elements[1] = (1 - c) * axis.y * axis.x + s * axis.z;
-        result.elements[2] = (1 - c) * axis.z * axis.x - s * axis.y;
-        result.elements[4] = (1 - c) * axis.x * axis.y - s * axis.z;
-        result.elements[5] = (1 - c) * axis.y * axis.y + c;
-        result.elements[6] = (1 - c) * axis.z * axis.y + s * axis.x;
-        result.elements[8] = (1 - c) * axis.x * axis.z + s * axis.y;
-        result.elements[9] = (1 - c) * axis.y * axis.z - s * axis.x;
-        result.elements[10] = (1 - c) * axis.z * axis.z + c;
-        result.elements[15] = 1;
+        let s = Math.sin(radians);
+        let c = Math.cos(radians);
+        let v = axis.normalize();
 
-        return result;
+        matrix.elements[0] = (1 - c) * v.x * v.x + c;
+        matrix.elements[1] = (1 - c) * v.y * v.x + s * v.z;
+        matrix.elements[2] = (1 - c) * v.z * v.x - s * v.y;
+
+        matrix.elements[4] = (1 - c) * v.x * v.y - s * v.z;
+        matrix.elements[5] = (1 - c) * v.y * v.y + c;
+        matrix.elements[6] = (1 - c) * v.z * v.y + s * v.x;
+
+        matrix.elements[8] = (1 - c) * v.x * v.z + s * v.y;
+        matrix.elements[9] = (1 - c) * v.y * v.z - s * v.x;
+        matrix.elements[10] = (1 - c) * v.z * v.z + c;
+
+        matrix.elements[15] = 1;
+
+        return matrix;
     }
 
     toBuffer() 
