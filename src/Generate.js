@@ -116,7 +116,6 @@ static plane(width, height, nlatitude, nlongitude) {
 //     attributes.addIndices(indices);
 //     return attributes;
 // }
-// This is where I got the parsing algorithm. Or at least some of it. 
 // https://github.com/timoxley/threejs/blob/master/utils/exporters/obj/convert_obj_three.py
 static obj(inputFile) {
 
@@ -171,11 +170,15 @@ static obj(inputFile) {
                 values.map((vertex, index) => {
                     faces.push(...[faces.length]); 
                     positions.push(...vPositions.slice(vertex * 3 - 3, vertex * 3));
-                    var tmp = vPositions.slice(vertex * 3 - 3, vertex * 3);
-                    var v = new Vector3(tmp[0], tmp[1], tmp[2])
-                    v=v.normalize();
-                    normals.push(...[v.x, v.y, v.z])
-                    //normals.push(...vNormals.slice(vertex * 3 - 3, vertex * 3));        
+                    if (vNormals[vertex] == undefined) {
+                        var tmp = vPositions.slice(vertex * 3 - 3, vertex * 3);
+                        var v = new Vector3(tmp[0], tmp[1], tmp[2])
+                        v=v.normalize();
+                        normals.push(...[v.x, v.y, v.z])
+                    } else {
+                        normals.push(...vNormals.slice(vertex * 3 - 3, vertex * 3));        
+
+                    }
                 });
                 break;
             default: break;

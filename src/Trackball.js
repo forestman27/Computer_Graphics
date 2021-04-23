@@ -9,7 +9,6 @@ export class Trackball {
         this.previousRotation = Matrix4.identity();
         this.rotation = Matrix4.identity();
         this.dimensions = new Vector2(0,0);
-        this.gap = 0.0
     }
 
     setViewport(width, height)
@@ -36,13 +35,13 @@ export class Trackball {
     start(mousePixels)
     {
         this.mouseSphere0 = this.pixelsToSphere(mousePixels);
-        this.gap = 0.0;
     }
 
     drag(mousePixels, multiplier)
     {
         const mouseSphere = this.pixelsToSphere(mousePixels);
         const dot = this.mouseSphere0.dot(mouseSphere);
+    
         if (Math.abs(dot) < 0.9999) {
             const radians = Math.acos(dot) * multiplier;
             const axis = this.mouseSphere0.cross(mouseSphere).normalize();
