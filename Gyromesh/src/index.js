@@ -87,11 +87,10 @@ async function initialize() {
   // attributes.addIndices(indices);
 
   var attributes = new VertexAttributes();
-  let inputFile = await fetch("skyscraper.obj").then(response => response.text());
+  let inputFile = await fetch("cow-nonormals.obj").then(response => response.text());
 
   //var {positions, normals, indices, dimenxyz} = Generate.obj(inputFile);  
   var {positions, normals, indices, maxxyz} = Generate.obj(inputFile)
-  console.log("dime")
   console.log(maxxyz);
   distance = 0.0;
   if (maxxyz.x > distance) distance = maxxyz.x;
@@ -205,7 +204,7 @@ function onMouseUp(event) {
       var pace = Math.abs(speed.x - placeholder.x) + Math.abs(speed.y - placeholder.y)
 
       function myFunc() {
-        trackball.rotation = trackball.rotation.multiplyMatrix4(Matrix4.rotateAroundAxis(new Vector3(-direction.x, direction.y, 1.01), 3));
+        trackball.rotation = trackball.rotation.multiplyMatrix4(Matrix4.rotateAroundAxis(new Vector3(-direction.x, direction.y, 0), pace/10));
         render();
         if (!isLeftMouseDown) {
           setTimeout(myFunc, 10);
@@ -216,7 +215,6 @@ function onMouseUp(event) {
       }
     }
     setTimeout(getDirection, 10);
-    
   }
 }
 initialize();
