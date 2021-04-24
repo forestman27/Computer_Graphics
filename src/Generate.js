@@ -122,11 +122,10 @@ static obj(inputFile) {
     var positions = [];
     var normals = [];
 
-    let vPositions = [];
-    let vNormals = [];
-    let faces = [];
-    let maxxyz = [];
-    console.log("objj")
+    var vPositions = [];
+    var vNormals = [];
+    var faces = [];
+    var maxxyz = new Vector3(0.0, 0.0, 0.0);
 
     var lines = inputFile.split("\n");
 
@@ -153,8 +152,19 @@ static obj(inputFile) {
         //console.log(values)
         // [1, 2, 3] 
     
+
         switch(rowType) {
-            case ("v"): vPositions.push(...values); vNormals.push(...[undefined, undefined, undefined]); break;
+            case ("v"): vPositions.push(...values); vNormals.push(...[undefined, undefined, undefined]);
+                if (values[0] > maxxyz.x) {
+                    maxxyz.x = values[0];
+                };
+                if (values[1] > maxxyz.y) {
+                    maxxyz.y = values[1];
+                };
+                if (values[2] > maxxyz.z) {
+                    maxxyz.z = values[2];
+                };
+                break;
             case ("vn"): vNormals.push(...values); break;
             case ("f"):// faces.push(...values); 
                 var len = values.length;
@@ -165,7 +175,7 @@ static obj(inputFile) {
                 //     faces.push(...[faces.length, faces.length + 1, faces.length+2]); 
                 // }
     
-                // could be three or four unfortunately.
+                // could be three or four unfortunately. 
                 // a, b, c, (d)
                 values.map((vertex, index) => {
                     faces.push(...[faces.length]); 
@@ -173,11 +183,10 @@ static obj(inputFile) {
                     if (vNormals[vertex] == undefined) {
                         var tmp = vPositions.slice(vertex * 3 - 3, vertex * 3);
                         var v = new Vector3(tmp[0], tmp[1], tmp[2])
-                        v=v.normalize();
+                        v = v.normalize();
                         normals.push(...[v.x, v.y, v.z])
                     } else {
                         normals.push(...vNormals.slice(vertex * 3 - 3, vertex * 3));        
-
                     }
                 });
                 break;
@@ -186,8 +195,7 @@ static obj(inputFile) {
     })
 
     var indices = faces;
-    var dimenxyz = new Vector3(1,1,1);
-    return {positions, normals, indices, dimenxyz};
+    return {positions, normals, indices, maxxyz};
   }
 
 // written by the professor

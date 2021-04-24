@@ -23,6 +23,8 @@ let isLeftMouseDown = false;
 let trackball;
 // this will be the for tracking the mouse speed when the user flicks the mouse and lets go.
 var speed = new Vector2(0,0);
+// this is used to adjust the distance so that the object isn't too big or small. 
+var distance = 0.0;
 
 function render() {
   gl.viewport(0, 0, canvas.width, canvas.height);
@@ -34,6 +36,8 @@ function render() {
   shaderProgram.bind();
   shaderProgram.setUniformMatrix4('modelToWorld', trackball.rotation);
   shaderProgram.setUniformMatrix4('worldToClip', worldToClip);
+  shaderProgram.setUniform1f('distance', (distance/3));
+
 
   // uniform mat4 worldFromModel;
   // uniform mat4 clipFromEye;
@@ -83,11 +87,19 @@ async function initialize() {
   // attributes.addIndices(indices);
 
   var attributes = new VertexAttributes();
-  let inputFile = await fetch("teapot.obj").then(response => response.text());
+  let inputFile = await fetch("skyscraper.obj").then(response => response.text());
 
   //var {positions, normals, indices, dimenxyz} = Generate.obj(inputFile);  
-  var {positions, normals, indices, dimenxyz} = Generate.obj(inputFile)
+  var {positions, normals, indices, maxxyz} = Generate.obj(inputFile)
+  console.log("dime")
+  console.log(maxxyz);
+  distance = 0.0;
+  if (maxxyz.x > distance) distance = maxxyz.x;
+  if (maxxyz.y > distance) distance = maxxyz.y;
+  if (maxxyz.z > distance) distance = maxxyz.z;
 
+
+  
   attributes.addAttribute('normal', normals / 3, 3, normals);
   attributes.addAttribute('position', positions / 3, 3, positions);
   attributes.addIndices(indices);
@@ -95,6 +107,8 @@ async function initialize() {
   const vertexSource = `
   uniform mat4 modelToWorld;
   uniform mat4 worldToClip;
+  uniform float distance;
+
   in vec3 position;
   in vec3 normal;
 
@@ -102,7 +116,7 @@ async function initialize() {
   out vec3 positionEye;
 
   void main() {
-    gl_Position = worldToClip * modelToWorld * vec4(position, 2.0);
+    gl_Position = worldToClip * modelToWorld * vec4(position, distance);
     fnormal = (modelToWorld * vec4(normal, 0)).xyz;
     positionEye = gl_Position.xyz; //(eyeFromWorld * worldFromModel * vec4(position, 1.0)).xyz;
   } 
@@ -201,9 +215,8 @@ function onMouseUp(event) {
         setTimeout(myFunc, 100);
       }
     }
-    if (!isLeftMouseDown) {
-      setTimeout(getDirection, 10);
-    }
+    setTimeout(getDirection, 10);
+    
   }
 }
 initialize();
