@@ -154,7 +154,7 @@ static obj(inputFile) {
     
 
         switch(rowType) {
-            case ("v"): vPositions.push(...values); vNormals.push(...[undefined, undefined, undefined]);
+            case ("v"): vPositions.push(...values);
                 if (values[0] > maxxyz.x) {
                     maxxyz.x = values[0];
                 };
@@ -177,23 +177,30 @@ static obj(inputFile) {
     
                 // could be three or four unfortunately. 
                 // a, b, c, (d)
-                values.map((vertex, index) => {
-                    faces.push(...[faces.length]); 
-                    positions.push(...vPositions.slice(vertex * 3 - 3, vertex * 3));
-                    if (vNormals[vertex] == undefined) {
-                        var tmp = vPositions.slice(vertex * 3 - 3, vertex * 3);
-                        var v = new Vector3(tmp[0], tmp[1], tmp[2])
-                        v = v.normalize();
-                        normals.push(...[v.x, v.y, v.z])
-                    } else {
-                        normals.push(...vNormals.slice(vertex * 3 - 3, vertex * 3));        
-                    }
-                });
+                faces.push(...values);
+                // values.map((vertex, index) => {
+                //     faces.push(...[faces.length]); 
+                //     positions.push(...vPositions.slice(vertex * 3 - 3, vertex * 3));
+                //     if (vNormals[vertex] == undefined) {
+                //         var tmp = vPositions.slice(vertex * 3 - 3, vertex * 3);
+                //         var v = new Vector3(tmp[0], tmp[1], tmp[2])
+                //         v = v.normalize();
+                //         normals.push(...[v.x, v.y, v.z])
+                //     } else {
+                //         normals.push(...vNormals.slice(vertex * 3 - 3, vertex * 3));        
+                //     }
+                // });
                 break;
             default: break;
         }
     })
-
+    for (var i = 0; i < vPositions.length/3; i++) {
+        var tmp = vPositions.slice(i * 3 , i * 3 + 3);
+        var v = new Vector3(tmp[0], tmp[1], tmp[2])
+        v = v.normalize();
+        normals.push(...[v.x, v.y, v.z])
+    }
+    positions = vPositions;
     var indices = faces;
     return {positions, normals, indices, maxxyz};
   }

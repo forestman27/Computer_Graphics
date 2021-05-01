@@ -80,7 +80,7 @@ function onSizeChanged() {
 async function initialize() {
   trackball = new Trackball();
 
-  // const {positions, normals, indices} = generate.torus(50, 50, 6, 3);
+  // const {positions, normals, indices} = Generate.torus(50, 50, 6, 3);
   // const attributes = new VertexAttributes();
   // attributes.addAttribute('normal', normals / 3, 3, normals);
   // attributes.addAttribute('position', positions / 3, 3, positions);
@@ -90,8 +90,15 @@ async function initialize() {
   let inputFile = await fetch("cow-nonormals.obj").then(response => response.text());
 
   //var {positions, normals, indices, dimenxyz} = Generate.obj(inputFile);  
+  console.log(Generate.obj(inputFile))
+  //const {positions, normals, indices} = Generate.torus(50, 50, 6, 3);
+  // const {positions, faces, normals} = Generate.torus(50, 50, 6, 3);
+  //var indices = faces;
+
+  //var maxxyz = new Vector3(0.0);
+  //console.log(console.log(Generate.torus(50, 50, 6, 3)))
   var {positions, normals, indices, maxxyz} = Generate.obj(inputFile)
-  console.log(maxxyz);
+  //console.log(maxxyz);
   distance = 0.0;
   if (maxxyz.x > distance) distance = maxxyz.x;
   if (maxxyz.y > distance) distance = maxxyz.y;
